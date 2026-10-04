@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Emotion Detector</title>
+  <meta name="description" content="Type a sentence and find out which emotion it expresses." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-emotion="none">
+  <div class="glow" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Emotion Detector</span>
+    </div>
+    <div id="api-status" class="status" data-state="checking" role="status">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span id="api-status-text">Checking API…</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Input -->
+    <section class="panel composer" aria-labelledby="page-title">
+      <h1 id="page-title">What feeling sits behind these words?</h1>
+      <p class="lede">
+        Paste a sentence, a tweet or a message. The model reads it and names the
+        emotion it expresses.
+      </p>
+
+      <form id="predict-form" novalidate>
+        <label for="text" class="field-label">Your text</label>
+        <textarea
+          id="text"
+          name="text"
+          rows="6"
+          placeholder="I can't stop smiling since I got the news this morning…"
+          aria-describedby="field-error char-count"
+          autocomplete="off"
+        ></textarea>
+        <div class="field-meta">
+          <p id="field-error" class="field-error" role="alert"></p>
+          <span id="char-count" class="char-count">0 characters</span>
+        </div>
+
+        <div class="samples" role="group" aria-label="Try an example">
+          <span class="samples-label">Try an example</span>
+          <button type="button" class="chip" data-text="I got the job! I have been smiling all day and can't wait to tell everyone.">Good news</button>
+          <button type="button" class="chip" data-text="I'm furious. They cancelled my booking an hour before and refused to refund me.">Complaint</button>
+          <button type="button" class="chip" data-text="I miss her so much. The house feels empty and quiet without her.">Missing someone</button>
+          <button type="button" class="chip" data-text="I heard footsteps downstairs and I'm home alone. My hands are shaking.">Home alone</button>
+          <button type="button" class="chip" data-text="Wait, you drove all the way here just to surprise me? I had no idea!">Surprise visit</button>
+        </div>
+
+        <div class="actions">
+          <button type="submit" id="submit-btn" class="btn-primary">
+            <span class="btn-spinner" aria-hidden="true"></span>
+            <span id="btn-label">Detect emotion</span>
+          </button>
+          <button type="button" id="clear-btn" class="btn-ghost">Clear</button>
+          <span class="hint">Ctrl + Enter to submit</span>
+        </div>
+      </form>
+    </section>
+
+    <!-- Output -->
+    <section class="panel output" aria-live="polite" aria-label="Prediction result">
+      <div id="output" data-state="idle">
+
+        <!-- idle -->
+        <div class="state state-idle" data-for="idle">
+          <div class="idle-faces" aria-hidden="true">
+            <span>😢</span><span>😠</span><span>❤️</span><span>😮</span><span>😨</span><span>😄</span>
+          </div>
+          <h2>Your result appears here</h2>
+          <p>The model recognises six emotions: sadness, anger, love, surprise, fear and joy.</p>
+        </div>
+
+        <!-- loading -->
+        <div class="state state-loading" data-for="loading" hidden>
+          <div class="loader" aria-hidden="true"></div>
+          <h2>Reading your text…</h2>
+          <div class="skeleton" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <!-- result -->
+        <article class="state state-result" data-for="result" hidden>
+          <div class="result-head">
+            <div id="result-emoji" class="result-emoji" aria-hidden="true">😄</div>
+            <div>
+              <p class="result-kicker">Detected emotion</p>
+              <h2 id="result-emotion" class="result-emotion">Joy</h2>
+            </div>
+          </div>
+          <p id="result-blurb" class="result-blurb"></p>
+
+          <figure class="result-quote">
+            <figcaption>Text analysed</figcaption>
+            <blockquote id="result-text"></blockquote>
+          </figure>
+
+          <dl class="result-meta">
+            <div><dt>Model class</dt><dd id="result-class">–</dd></div>
+            <div><dt>Response time</dt><dd id="result-time">–</dd></div>
+          </dl>
+        </article>
+
+        <!-- error -->
+        <div class="state state-error" data-for="error" hidden role="alert">
+          <div class="error-icon" aria-hidden="true">!</div>
+          <h2 id="error-title">Something went wrong</h2>
+          <p id="error-message"></p>
+          <ul id="error-list" class="error-list" hidden></ul>
+          <button type="button" id="retry-btn" class="btn-ghost">Try again</button>
+        </div>
+      </div>
+
+      <div id="history" class="history" hidden>
+        <h3>Recent</h3>
+        <ul id="history-list"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Connected to <code id="api-base-label">http://127.0.0.1:8000</code>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
